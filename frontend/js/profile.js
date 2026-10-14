@@ -3,7 +3,7 @@ import { rememberParcel, setContext } from "./context.js";
 import { createMap } from "./map.js";
 import { t, localText, recType } from "./i18n.js";
 import { STATES } from "./states.js";
-import { citizenHeader, bindLang, disclaimer, esc, fmtHa, fmtInr, fmtUlpin, fmtDate, icon, statusBadge, sev, errorBox, title, riskStatus, siteFooter, skeleton, toast } from "./ui.js";
+import { citizenHeader, bindLang, esc, fmtHa, fmtInr, fmtUlpin, fmtDate, icon, statusBadge, sev, errorBox, title, riskStatus, siteFooter, skeleton, toast } from "./ui.js";
 
 export function parcelSvg(ring, w = 132, h = 92, stroke = "#0b3d91", fill = "#e3ecfa") {
   const xs = ring.map(c => c[0]), ys = ring.map(c => c[1]);
@@ -46,7 +46,7 @@ function section(id, heading, terms, concept, concepts, body) {
 }
 
 export function renderProfile(root, rerender, { ulpin, section: jump }) {
-  root.innerHTML = `<div class="page">${citizenHeader("map")}<main class="page-main" id="main"><div class="dossier-skel">${skeleton(3)}${skeleton(5)}</div></main>${siteFooter()}${disclaimer()}</div>`;
+  root.innerHTML = `<div class="page">${citizenHeader("map")}<main class="page-main" id="main"><div class="dossier-skel">${skeleton(3)}${skeleton(5)}</div></main>${siteFooter()}</div>`;
   bindLang(root, rerender);
   setContext({ page: "profile", ulpin }, { replace: true });
   let ctl = null, gone = false;

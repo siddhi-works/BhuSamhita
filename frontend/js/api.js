@@ -49,9 +49,6 @@ export const api = {
   reports: (state, district) => request(`/reports/summary${q({ state, district })}`),
   dataQuality: () => request("/analytics/data-quality"),
   glossary: (concept) => request(`/glossary/${concept}`),
-  assistantStatus: () => request("/assistant/status", { fresh: true }),
-  assistantContext: (u) => request(`/parcels/${u}/assistant-context`),
-  ask: (ulpin, question) => request("/assistant/ask", { method: "POST", body: { ulpin, question } }),
   chatStatus: () => request("/chat/status", { fresh: true }),
   chat: (messages, context, lang) => request("/chat", { method: "POST", body: { messages, context, lang } }),
   // officer (authenticated, never cached)

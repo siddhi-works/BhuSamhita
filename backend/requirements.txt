@@ -1,0 +1,4 @@
+# Runtime dependencies (mirrors backend/pyproject.toml). Install: pip install -r backend/requirements.txt
+fastapi>=0.110,<1
+pydantic>=2.6,<3
+uvicorn>=0.29,<1

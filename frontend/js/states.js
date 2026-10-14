@@ -85,9 +85,6 @@ export const REGION = {
   },
 };
 
-// Categorical colours for districts on the regional maps (muted map tones; cycled).
-export const DISTRICT_COLORS = ["#2f6fd6", "#e07a1f", "#15803d", "#9333ea", "#b45309", "#0f766e", "#be123c", "#4d7c0f", "#1e40af", "#a16207", "#0e7490", "#7c2d12", "#6d28d9", "#166534"];
-
 export const ACTION_LABEL = {
   record_note: "Record mutation note", issue_notice: "Issue notice", register_objection: "Register objection (disputed)",
   certify: "Certify", reject: "Reject", return: "Return for correction", forward: "Forward",

@@ -4,11 +4,11 @@
 import { api } from "./api.js";
 import { setContext } from "./context.js";
 import { mountDiscovery } from "./discovery.js";
-import { getLang, localText, setLang, t } from "./i18n.js";
+import { getLang, localText, t } from "./i18n.js";
 import { baseLayer, createMap } from "./map.js";
 import { prov } from "./profile.js";
 import { REGION, STATES } from "./states.js";
-import { bindLang, citizenHeader, disclaimer, emptyState, esc, fmtHa, fmtUlpin, icon, siteFooter, skeleton, statusBadge, title, toast } from "./ui.js";
+import { bindLang, citizenHeader, emptyState, esc, fmtHa, fmtUlpin, icon, siteFooter, skeleton, statusBadge, title, toast } from "./ui.js";
 
 const L = window.L;
 
@@ -79,7 +79,7 @@ function renderChooser(root, rerender) {
         ${stateCardsHtml()}
       </div>
     </main>
-    ${siteFooter()}${disclaimer()}</div>`;
+    ${siteFooter()}</div>`;
   bindLang(root, rerender);
   let cleanup = () => {};
   mountStateMinis(root).then((c) => { cleanup = c; });
@@ -135,7 +135,7 @@ function renderState(root, rerender, code, { ulpin: preselect, base }) {
       </div>
 
     </main>
-    ${siteFooter()}${disclaimer()}</div>`;
+    ${siteFooter()}</div>`;
   bindLang(root, rerender);
   const $ = (s) => root.querySelector(s);
 

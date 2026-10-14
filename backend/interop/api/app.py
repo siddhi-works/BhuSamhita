@@ -360,6 +360,15 @@ def create_app(service: LandStackService | None = None) -> FastAPI:
     app.state.workflow = workflow
     app.include_router(portal_router(svc, workflow))
 
+    @app.middleware("http")
+    async def _security_headers(request: Request, call_next):
+        response = await call_next(request)
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        return response
+
     # Web portal (citizen + officer) served from the same origin as the API.
     frontend = Path(os.environ.get("LANDSTACK_FRONTEND_DIR", str(REPO_ROOT / "frontend")))
     if frontend.is_dir():

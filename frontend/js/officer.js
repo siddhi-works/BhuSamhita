@@ -1,11 +1,10 @@
 import { api, session, ApiError } from "./api.js";
 import { bars, stack, lines, indicative, MONTHS } from "./charts.js";
 import { createMap } from "./map.js";
-import { findingHtml, flowHtml, parcelSvg, prov } from "./profile.js";
+import { findingHtml, flowHtml, parcelSvg } from "./profile.js";
 import { STATES, REGION, ACTION_LABEL, STATUS_LABEL, FORWARD_TO, queueOf } from "./states.js";
-import { MARK, govIdentity, disclaimer, esc, fmtHa, fmtUlpin, fmtDate, icon, sev, loading, errorBox, title, toast, pct, SEV_RANK, riskStatus, bindLang, langSelect, siteFooter, skeleton } from "./ui.js";
+import { MARK, govIdentity, esc, fmtHa, fmtUlpin, fmtDate, icon, sev, loading, errorBox, title, toast, pct, SEV_RANK, riskStatus, bindLang, langSelect, siteFooter, skeleton } from "./ui.js";
 import { t } from "./i18n.js";
-import { mountStateMinis } from "./region.js";
 
 const ui = { queue: "pending", tab: "work", vfilter: { sev: "", group: "" }, gisSel: null };
 const statusBadge = (s) => { const [c, l] = STATUS_LABEL[s] || ["info", title(s)]; return `<span class="badge ${c}">${esc(l)}</span>`; };
@@ -48,7 +47,7 @@ const OFFICER_PW = "LandStack@2026";
 
 export function renderOfficerLogin(root, rerender, { state, username } = {}) {
   const code = STATES[(state || "").toUpperCase()] ? state.toUpperCase() : "";
-  root.innerHTML = `<div class="page officer-portal">${officerTop(null)}<main class="op-main" id="lm"><div class="wrap">${skeleton(4)}</div></main>${siteFooter()}${disclaimer()}</div>`;
+  root.innerHTML = `<div class="page officer-portal">${officerTop(null)}<main class="op-main" id="lm"><div class="wrap">${skeleton(4)}</div></main>${siteFooter()}</div>`;
   bindLang(root, rerender);
   let minis = () => {}, gone = false;
   api.accounts().then(({ accounts }) => {
@@ -176,7 +175,6 @@ function shell(root, o, active, body, { fill = false } = {}) {
       </nav>
       <main class="officer-main ${fill ? "fill" : ""}" id="om">${body}</main>
     </div>
-    ${disclaimer()}
   </div>`;
   bindSearch(root, o);
 }

@@ -1,0 +1,19 @@
+# Render Blueprint: one Docker web service serves the portal (/) and the API (/v1).
+# Deploy: Render dashboard -> New -> Blueprint -> connect this repository.
+services:
+  - type: web
+    name: land-gpt
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    # "free" sleeps after ~15 min idle and drops officer sessions/audit log on restart.
+    # Use "starter" for an always-on instance. Keep a single instance: sessions live in process memory.
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # Render injects PORT; the Dockerfile binds to it.
+      - key: ANTHROPIC_API_KEY      # optional: enables the AI assistant
+        sync: false
+      - key: LANDSTACK_ASSISTANT_MODEL
+        sync: false

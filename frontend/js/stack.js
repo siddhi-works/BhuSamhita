@@ -26,34 +26,34 @@ const TIERS = ["tierRights", "tierSurvey", "tierLiabilities"];
 
 /** Render the connected-stack diagram into `el`. Returns nothing; all handlers are scoped to `el`. */
 export function mountStack(el) {
-  el.innerHTML = skeleton(6);
-  let filter = "", open = null, data = null;
+  let open = null, data = null;
 
-  Promise.all([api.dataQuality(), api.reports()]).then(([dq, rep]) => {
-    const cov = new Map(rep.coverage.map((c) => [`${c.state_code}:${c.source_table}`, c]));
-    data = {};
-    for (const c of CONCEPTS) {
-      data[c.k] = {};
-      for (const code of Object.keys(STATES)) {
-        const rows = (dq.source_coverage[code] || []).filter((r) => r.concepts.includes(c.k) && r.source_table !== "core.parcel_registry");
-        data[c.k][code] = rows.map((r) => ({ type: r.native_record_type, table: r.source_table, ...(cov.get(`${code}:${r.source_table}`) || {}) }));
+  const load = () => {
+    el.innerHTML = skeleton(6);
+    Promise.all([api.dataQuality(), api.reports()]).then(([dq, rep]) => {
+      const cov = new Map(rep.coverage.map((c) => [`${c.state_code}:${c.source_table}`, c]));
+      data = {};
+      for (const c of CONCEPTS) {
+        data[c.k] = {};
+        for (const code of Object.keys(STATES)) {
+          const rows = (dq.source_coverage[code] || []).filter((r) => r.concepts.includes(c.k) && r.source_table !== "core.parcel_registry");
+          data[c.k][code] = rows.map((r) => ({ type: r.native_record_type, table: r.source_table, ...(cov.get(`${code}:${r.source_table}`) || {}) }));
+        }
       }
-    }
-    const tables = Object.values(dq.source_coverage).reduce((n, r) => n + r.length, 0);
-    draw({ parcels: dq.registry.ulpins, tables, rules: dq.by_rule.length });
-  }).catch(() => { el.innerHTML = `<div class="empty-state">${icon.alert}<b>${esc(t("dataUnavailable"))}</b></div>`; });
+      draw();
+    }).catch(() => {
+      el.innerHTML = `<div class="empty-state">${icon.alert}<b>${esc(t("dataUnavailable"))}</b>
+        <button class="btn sm" type="button" data-retry>${esc(t("retry"))}</button></div>`;
+      el.querySelector("[data-retry]").onclick = load;
+    });
+  };
+  load();
 
-  function draw(fig) {
-    const card = (c) => {
-      const states = Object.keys(STATES).filter((code) => data[c.k][code].length);
-      const on = !filter || states.includes(filter);
-      const names = filter ? [...new Set(data[c.k][filter].map((x) => x.type))] : [];
-      return `<button class="ls-card ${on ? "" : "off"} ${open === c.k ? "open" : ""}" data-c="${c.k}" aria-expanded="${open === c.k}">
+  function draw() {
+    const card = (c) => `<button class="ls-card ${open === c.k ? "open" : ""}" data-c="${c.k}" aria-expanded="${open === c.k}">
         <span class="ls-ic">${icon[c.ic]}</span>
         <span class="ls-t"><b>${esc(t(c.tkey))}</b><small>${esc(t(c.dkey))}</small></span>
-        ${filter ? `<span class="ls-native">${on ? names.map(esc).join(" · ") : esc(t("hubNotConnected"))}</span>` : ""}
       </button>`;
-    };
     el.innerHTML = `
       <div class="lstack">
         <div class="ls-top">
@@ -67,19 +67,18 @@ export function mountStack(el) {
         </div>
         <div class="ls-detail" id="ls-detail" ${open ? "" : "hidden"}>${open ? detail(open) : ""}</div>
       </div>`;
-    el.querySelectorAll("[data-f]").forEach((b) => b.onclick = () => { filter = b.dataset.f; draw(fig); });
     el.querySelectorAll("[data-c]").forEach((b) => b.onclick = () => {
       open = open === b.dataset.c ? null : b.dataset.c;
-      draw(fig);
+      draw();
       if (open) el.querySelector("#ls-detail").scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
-    el.querySelector("[data-close]")?.addEventListener("click", () => { open = null; draw(fig); });
+    el.querySelector("[data-close]")?.addEventListener("click", () => { open = null; draw(); });
   }
 
   function detail(k) {
     const c = CONCEPTS.find((x) => x.k === k);
     const recent = recentParcel();
-    const rows = Object.keys(STATES).filter((code) => !filter || code === filter).map((code) => {
+    const rows = Object.keys(STATES).map((code) => {
       const items = data[k][code];
       const R = REGION[code];
       const rec = R.records.find((r) => r.connected !== false && items.some((x) => x.type === r.native));
@@ -95,6 +94,6 @@ export function mountStack(el) {
         <button class="icon-btn" data-close aria-label="${esc(t("close"))}">${icon.close}</button></div>
       <div class="lsd-rows">${rows}</div>
       <div class="lsd-foot"><span class="fine">${esc(t("lsLinkage"))}</span>
-        ${recent ? `<a class="btn sm primary" href="#/parcel/${recent.ulpin}/${c.section}">${esc(t("lsOpenRecent"))}: ${esc(recent.native_label)}</a>` : `<a class="btn sm primary" href="#/explore">${esc(t("svcPickParcel"))}</a>`}</div>`;
+        ${recent ? `<a class="btn sm primary" href="#/parcel/${recent.ulpin}/${c.section}">${esc(t("lsOpenRecent"))}: ${esc(recent.native_label)}</a>` : `<a class="btn sm primary" href="#/map?search">${esc(t("svcPickParcel"))}</a>`}</div>`;
   }
 }

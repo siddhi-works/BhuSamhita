@@ -3,7 +3,7 @@ import { createMap, parcelZoom, Z } from "./map.js";
 import { t, localText, recType } from "./i18n.js";
 import { STATES } from "./states.js";
 import { SLUG } from "./region.js";
-import { citizenHeader, bindLang, disclaimer, esc, fmtHa, fmtUlpin, icon, statusBadge, toast, loading, sev, emptyState } from "./ui.js";
+import { citizenHeader, bindLang, esc, fmtHa, fmtUlpin, icon, statusBadge, toast, loading, sev, emptyState } from "./ui.js";
 import { setContext } from "./context.js";
 
 // Parcel number term used by each state's own records.
@@ -60,7 +60,6 @@ export function renderCitizen(root, rerender, params = {}) {
 
       <div class="statusbar"><span id="crumb" class="crumb"></span><span class="grow"></span><span id="coord">—</span><span id="zl"></span></div>
     </div>
-    ${disclaimer()}
   </div>`;
   bindLang(root, rerender);
   const $ = (s) => root.querySelector(s);

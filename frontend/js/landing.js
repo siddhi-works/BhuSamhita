@@ -1,52 +1,12 @@
-import { api } from "./api.js";
 import { setContext } from "./context.js";
-import { mountDiscovery, parcelCardHtml } from "./discovery.js";
 import { t } from "./i18n.js";
-import { SLUG, mountStateMinis, stateCardsHtml } from "./region.js";
 import { mountStack } from "./stack.js";
-import { REGION, STATES } from "./states.js";
-import {
-  citizenHeader,
-  bindLang,
-  disclaimer,
-  emptyState,
-  esc,
-  fmtUlpin,
-  icon,
-  pct,
-  riskStatus,
-  siteFooter,
-  skeleton,
-  toast
-} from "./ui.js";
-
-// Quick actions and service cards: each one navigates, scrolls to a working form, or opens the assistant.
-const QUICK = [
-  { key: "qaUlpin", icon: "search", href: "#/map?search" },
-  { key: "landMap", icon: "map", href: "#/map" },
-  { key: "chatAsk", icon: "spark", chat: "" },
-];
-
-const SERVICES = [
-  { title: "7/12", sub: "Maharashtra · ७/१२", href: "#/state/MH/712", icon: "register" },
-  { title: "8A", sub: "Maharashtra · ८अ", href: "#/state/MH/8a", icon: "register" },
-  { title: "Property Card", sub: "Maharashtra · Gujarat", href: "#/state/MH/pc", icon: "register" },
-  { title: "K-Prat", sub: "Maharashtra · क-प्रत", off: true, icon: "register" },
-  { title: "Khatauni · Khasra", sub: "Uttar Pradesh · खतौनी", href: "#/state/UP/khatauni", icon: "register" },
-  { title: "VF 7/12 · VF 8A", sub: "Gujarat · ગા.ન.નં.", href: "#/state/GJ/vf712", icon: "register" },
-  { tkey: "svcMutation", sub: "Ferfar · Namantaran · VF 6", links: [["MH", "#/state/MH/ferfar"], ["UP", "#/state/UP/namantaran"], ["GJ", "#/state/GJ/vf6"]], icon: "swap" },
-  { tkey: "svcOwnership", section: "land", icon: "user" },
-  { tkey: "svcSurveySearch", go: "explore:native", icon: "search" },
-  { tkey: "svcUlpinSearch", go: "explore:ulpin", icon: "search" },
-  { tkey: "svcParcelMap", href: "#/map", icon: "map" },
-  { tkey: "svcVerify", section: "checks", icon: "shield" },
-];
-
-const DISC_ORDER = ["ownership", "registration_mutation_lag", "area_gis", "encumbrance_litigation", "missing_links", "planning_environment", "data_quality", "spatial", "identity"];
-
+import { citizenHeader, bindLang, esc, icon, siteFooter } from "./ui.js";
 
 /* =========================================================
    BhuSamhita LANDING PAGE
+   Both calls to action lead to gated routes (#/map, #/services);
+   app.js prompts for sign-in and returns the user to the page they asked for.
    ========================================================= */
 
 export function renderLanding(root, rerender, params = {}) {
@@ -60,11 +20,7 @@ export function renderLanding(root, rerender, params = {}) {
 
     <main>
 
-      <!-- =================================================
-           HERO
-           LEFT: Prime Minister · CENTRE: BhuSamhita · RIGHT: Minister of Rural Development
-           ================================================= -->
-
+      <!-- HERO — LEFT: Prime Minister · CENTRE: BhuSamhita · RIGHT: Minister of Rural Development -->
       <section class="hero-portal" aria-labelledby="hero-title">
         <div class="hp-grid">
 
@@ -112,8 +68,6 @@ export function renderLanding(root, rerender, params = {}) {
         </div>
       </section>
 
-
-
       <!-- WHAT LAND STACK CONNECTS -->
       <section class="connects-band" id="connects">
         <div class="wrap">
@@ -139,38 +93,12 @@ export function renderLanding(root, rerender, params = {}) {
 
     ${siteFooter()}
 
-    ${disclaimer()}
-
   </div>
   `;
 
   bindLang(root, rerender);
   mountStack(root.querySelector("#lstack"));
 
-
-  /* =======================================================
-     STATE MAP THUMBNAILS + DEEP LINK (#/explore)
-     ======================================================= */
-
-  let minis = () => {};
-  mountStateMinis(root).then((c) => { minis = c; });
-  if (params.section) setTimeout(() => root.querySelector(`#${params.section}`)?.scrollIntoView({ block: "start" }), 50);
-
-  return () => { minis(); };
-
-}
-
-
-function serviceCard(s) {
-  const name = s.tkey ? t(s.tkey) : s.title;
-  const attrs = s.href ? `href="${s.href}"` : s.section ? `href="#" data-section="${s.section}"` : s.go ? `href="#" data-go="${s.go}"` : "";
-  const tag = s.off ? `<span class="svc-tag off">${esc(t("notConnected2"))}</span>`
-    : s.section ? `<span class="svc-tag">${esc(t("svcNeedsParcel"))}</span>` : `<span class="svc-tag live">${esc(t("available"))}</span>`;
-  const links = s.links ? `<span class="svc-links">${s.links.map(([c, h]) => `<a href="${h}">${esc(STATES[c].name)}</a>`).join("")}</span>` : "";
-  if (s.off || s.links) {
-    return `<div class="svc-card ${s.off ? "off" : ""}"><span class="svc-ic">${icon[s.icon]}</span>
-      <span class="svc-t"><b>${esc(name)}</b><small>${esc(s.sub || "")}</small></span>${links}${tag}</div>`;
-  }
-  return `<a class="svc-card" ${attrs}><span class="svc-ic">${icon[s.icon]}</span>
-    <span class="svc-t"><b>${esc(name)}</b>${s.sub ? `<small>${esc(s.sub)}</small>` : ""}</span>${tag}</a>`;
+  // Deep link (#/explore) scrolls to the connected-stack section.
+  if (params.section) setTimeout(() => root.querySelector("#connects")?.scrollIntoView({ block: "start" }), 50);
 }

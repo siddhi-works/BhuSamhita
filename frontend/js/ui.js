@@ -250,9 +250,8 @@ export function langSelect(id = "lang") {
 
 // ============================================================
 // CITIZEN HEADER
-// Landing page: full portal header (government identity, Land
-// Stack bar, navigation). Map and profile: the compact bar, so
-// the GIS keeps the full viewport height.
+// One portal header on every citizen page: government identity,
+// brand + navigation bar, language and account controls.
 // Navigation lists only routes that exist in app.js.
 // ============================================================
 
@@ -272,27 +271,6 @@ function citizenNav(active, cls) {
 }
 
 export function citizenHeader(active = "home") {
-
-  if (false) {   // one common government header on every page
-    return `
-      <header class="site-header">
-        <div class="gov-strip" aria-hidden="true"></div>
-        <div class="bar">
-          <a class="brand" href="#/">
-            <span class="brand-mark">${MARK}</span>
-            <span class="brand-text">
-              <b>${esc(t("brand"))}</b>
-              <span>${esc(t("tagline"))}</span>
-            </span>
-          </a>
-          <span class="grow"></span>
-          ${citizenNav(active, "topnav")}
-          ${langSelect()}
-          <span class="acct-slot">${accountHtml()}</span>
-        </div>
-      </header>
-    `;
-  }
 
   return `
     <header class="portal-header">
@@ -344,14 +322,6 @@ export function bindLang(root, rerender) {
 
     });
 }
-
-
-// ============================================================
-// DISCLAIMER
-// ============================================================
-
-// Kept as a no-op so every page's layout call stays the same; the product shows no environment banner.
-export const disclaimer = () => "";
 
 
 // ============================================================
